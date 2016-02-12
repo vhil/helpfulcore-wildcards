@@ -42,21 +42,20 @@ namespace Helpfulcore.Wildcards.ItemResolving
             {
                 if (itemUrl[index] == WildcardTokenizedString)
                 {
-                    var mapping = rules[ruleIndex++];
-                    if (mapping == null)
-                    {
-                        throw new Exception("Can't resolve wildcards by index " + (ruleIndex - 1));
-                    }
+	                if (rules.ContainsKey(ruleIndex))
+	                {
+						var mapping = rules[ruleIndex];
+						if (mapping == null)
+						{
+							throw new Exception("Can't resolve wildcards by index " + (ruleIndex));
+						}
 
-                    ret.Add(HttpUtility.UrlDecode(mapping), rurl);
+						ret.Add(HttpUtility.UrlDecode(mapping), rurl);
+						ruleIndex++;
+	                }
                 }
 
                 index++;
-            }
-
-            if (rules.Count != ret.Count)
-            {
-                throw new Exception("Not all wildcard rules have been applied during url resolving");
             }
 
             return ret;
