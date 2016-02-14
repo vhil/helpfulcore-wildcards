@@ -1,4 +1,6 @@
-﻿using Helpfulcore.Wildcards.ItemResolving;
+﻿using System;
+using System.Linq;
+using Helpfulcore.Wildcards.ItemResolving;
 using Sitecore;
 using Sitecore.Data.Items;
 using Sitecore.Diagnostics;
@@ -12,9 +14,12 @@ namespace Helpfulcore.Wildcards.Pipelines.Response.GetPageItem
 		{
 			Assert.ArgumentNotNull(args, "args");
 
-			if (args.Result != null && (args.Result).Name != "*")
+			if (args.Result != null)
 			{
-				return;
+				if (!WildcardManager.Current.HasWildcardsPath(args.Result))
+				{
+					return;
+				}
 			}
 
 			args.Result = this.ResolveItem(args);
@@ -27,7 +32,7 @@ namespace Helpfulcore.Wildcards.Pipelines.Response.GetPageItem
                 return null;
             }
 
-		    var route = WildcardManager.GetWildcardRouteForItemResolver(args.Result, Context.Site);
+		    var route = WildcardManager.Current.GetWildcardRouteForItemResolver(args.Result, Context.Site);
 		    return WildcardItemResolver.Current.ResolveItem(args.Result, route);
 		}
     }

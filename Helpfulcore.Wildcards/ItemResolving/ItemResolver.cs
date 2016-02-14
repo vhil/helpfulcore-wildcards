@@ -17,12 +17,12 @@ namespace Helpfulcore.Wildcards.ItemResolving
             get { return Settings.GetSetting("WildcardTokenizedString", ",-w-,"); }
         }
 
-        public virtual Item ResolveItem(Item item, WildcardRoute route)
+        public virtual Item ResolveItem(Item item, WildcardRouteItem routeItem)
         {
             return null;
         }
 
-        protected virtual IDictionary<string, string> GetTokenValues(Item item, WildcardRoute route)
+        protected virtual IDictionary<string, string> GetTokenValues(Item item, WildcardRouteItem routeItem)
         {
             var ret = new Dictionary<string, string>();
             string[] itemUrl;
@@ -33,7 +33,7 @@ namespace Helpfulcore.Wildcards.ItemResolving
             }
 
             var requestUrl = HttpContext.Current.Request.Url.LocalPath.Split(new[] { '/' });
-            var rules = route.ItemResolvingRules;
+            var rules = routeItem.ItemResolvingRules;
 
             int ruleIndex = 0;
             int index = 0;

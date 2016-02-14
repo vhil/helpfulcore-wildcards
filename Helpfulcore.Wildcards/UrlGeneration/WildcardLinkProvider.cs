@@ -18,7 +18,7 @@ namespace Helpfulcore.Wildcards.UrlGeneration
 
         public override string GetItemUrl(Item item, UrlOptions options)
         {
-            var route = WildcardManager.GetWildcardRouteForLinkProvider(item, Context.Site);
+            var route = WildcardManager.Current.GetWildcardRouteForLinkProvider(item, Context.Site);
 
             if (route == null || route.WildcardItemIds.Any(x => x == item.ID))
             {
@@ -36,11 +36,11 @@ namespace Helpfulcore.Wildcards.UrlGeneration
             return this.ReplaceUrlTokens(routeUrl, item, route, options);
         }
 
-        protected virtual string ReplaceUrlTokens(string routeUrl, Item item, WildcardRoute route, UrlOptions options)
+        protected virtual string ReplaceUrlTokens(string routeUrl, Item item, WildcardRouteItem routeItem, UrlOptions options)
         {
             var resultUrl = new List<string>();
             
-            var tokenValues = this.GetTokenValues(item, route, options);
+            var tokenValues = this.GetTokenValues(item, routeItem, options);
             
             var urlPattern = routeUrl.Split(new[] { '/' });
             var tokenCounter = 0;
@@ -58,10 +58,10 @@ namespace Helpfulcore.Wildcards.UrlGeneration
             return string.Join("/", resultUrl);
         }
 
-        protected virtual IDictionary<int, string> GetTokenValues(Item item, WildcardRoute route, UrlOptions options)
+        protected virtual IDictionary<int, string> GetTokenValues(Item item, WildcardRouteItem routeItem, UrlOptions options)
         {
             var ret = new Dictionary<int, string>();
-            var rules = route.UrlGenerationRules;
+            var rules = routeItem.UrlGenerationRules;
 
             foreach (var rule in rules)
             {
@@ -82,7 +82,7 @@ namespace Helpfulcore.Wildcards.UrlGeneration
             return ret;
         }
 
-        protected virtual string GetMostSuitableRootItemUrl(WildcardRoute routeItem, UrlOptions options)
+        protected virtual string GetMostSuitableRootItemUrl(WildcardRouteItem routeItem, UrlOptions options)
         {
             var url = string.Empty;
 

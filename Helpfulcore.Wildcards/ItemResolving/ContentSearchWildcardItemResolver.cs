@@ -11,21 +11,14 @@ namespace Helpfulcore.Wildcards.ItemResolving
 {
     public class ContentSearchWildcardItemResolver : ItemResolver
     {
-        public override Item ResolveItem(Item item, WildcardRoute route)
+        public override Item ResolveItem(Item item, WildcardRouteItem routeItem)
         {
-            if (route == null)
+            if (routeItem == null)
             {
                 return item;
             }
 
-            var rootItem = route.ItemRootNode;
-
-            if (rootItem == null)
-            {
-                return item;
-            }
-
-            var tokenValues = this.GetTokenValues(item, route);
+            var tokenValues = this.GetTokenValues(item, routeItem);
 
             var database = "web";
             if (Context.Database.Name == "master")
@@ -33,18 +26,26 @@ namespace Helpfulcore.Wildcards.ItemResolving
                 database = "master";
             }
 
+			var rootItem = routeItem.ItemSearchRootNode;
+
             using (var searchContext = ContentSearchManager.GetIndex("sitecore_" + database + "_index").CreateSearchContext(SearchSecurityOptions.EnableSecurityCheck))
             {
                 var predicate = PredicateBuilder.True<SearchResultItem>();
-                foreach (var itemTemplateId in route.ItemTemplates)
+                foreach (var itemTemplateId in routeItem.ItemTemplates)
                 {
                     predicate = predicate.Or(p => p.TemplateId == itemTemplateId.ID);
                 }
 
-                var queryable = searchContext.GetQueryable<SearchResultItem>().Where(predicate)
-                    .Where(resultItem => resultItem.Paths.Contains(route.ItemRootNode.ID) && resultItem.Language == Context.Language.Name);
+                var queryable = searchContext.GetQueryable<SearchResultItem>()
+					.Where(predicate)
+                    .Where(resultItem => resultItem.Language == Context.Language.Name);
 
-                foreach (var tokenRule in tokenValues)
+	            if (rootItem != null)
+	            {
+					queryable = queryable.Where(resultItem => resultItem.Paths.Contains(rootItem.ID));
+	            }
+
+	            foreach (var tokenRule in tokenValues)
                 {
                     queryable = this.ConvertRuleToQuery(tokenRule, queryable);
                 }

@@ -7,7 +7,7 @@ using Sitecore.Data.Items;
 
 namespace Helpfulcore.Wildcards
 {
-    public class WildcardRoute
+    public class WildcardRouteItem
     {
         public static class FieldNames
         {
@@ -15,12 +15,12 @@ namespace Helpfulcore.Wildcards
             public const string UrlGenerationRules = "Url Generation Rules";
             public const string ItemResolvingRules = "Item Resolving Rules";
             public const string ItemTemplates = "Item Templates";
-            public const string ItemRootNode = "Item Root Node";
+			public const string ItemSearchRootNode = "Item Search Root Node";
         }
 
         protected readonly Item Item;
 
-        public WildcardRoute(Item wildcardRouteItem)
+        public WildcardRouteItem(Item wildcardRouteItem)
         {
             this.Item = wildcardRouteItem;
         }
@@ -73,10 +73,10 @@ namespace Helpfulcore.Wildcards
             get { return this.wildcardItemIds ?? (this.wildcardItemIds = GetMultilist(FieldNames.WildcardItems)); }
         }
 
-        private Item itemRootNode;
-        public Item ItemRootNode
+        private Item itemSearchRootNode;
+        public Item ItemSearchRootNode
         {
-            get { return this.itemRootNode ?? (this.itemRootNode = this.GetInternalLink(FieldNames.ItemRootNode)); }
+            get { return this.itemSearchRootNode ?? (this.itemSearchRootNode = this.GetInternalLink(FieldNames.ItemSearchRootNode)); }
         }
 
         protected virtual Item GetInternalLink(string fieldName)
