@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Configuration.Provider;
-using System.Linq;
 using Sitecore.Data.Items;
 using Sitecore.Sites;
 
@@ -25,11 +24,7 @@ namespace Helpfulcore.Wildcards
 
 		public virtual bool HasWildcardsPath(Item item)
 		{
-			var path = item.Paths.Path
-				.Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries)
-				.ToDictionary(k => k, v => v);
-
-			return path.ContainsKey("*");
+			return (item.Paths.FullPath + "/").Contains("/*/");
 		}
 	}
 }
