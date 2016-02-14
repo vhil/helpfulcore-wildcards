@@ -72,11 +72,6 @@ namespace Helpfulcore.Wildcards
 
 			var wildcardRoute = new WildcardRouteItem(route);
 
-			if (!item.Axes.IsDescendantOf(wildcardRoute.ItemSearchRootNode))
-			{
-				return null;
-			}
-
 			this.LinkProviderRoutesCache.Add(cacheKey, wildcardRoute);
 
 			return wildcardRoute;
