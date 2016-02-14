@@ -1,4 +1,4 @@
-﻿<%@ page language="C#" autoeventwireup="true" codebehind="WildcardTokenExtractor.aspx.cs" inherits="Helpfulcore.Wildcards.Profiling.WildcardTokenExtractor" %>
+﻿<%@ page language="C#" autoeventwireup="true" inherits="Helpfulcore.Wildcards.sitecore.admin.WildcardTokenExtractor" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -41,6 +41,10 @@
             <div class="form-group">
                 <label for="tbxResult">Extracted Value</label>
                 <asp:textbox rows="5" textmode="MultiLine" readonly="True" runat="server" cssclass="form-control" id="tbxResult"></asp:textbox>
+            </div>
+			<div class="form-group">
+                <label for="tbxCurrentUrl">Testing Item Url</label>
+                <asp:textbox readonly="True" runat="server" cssclass="form-control" id="tbxCurrentUrl"></asp:textbox>
             </div>
         </form>
         <div class="row row-offcanvas row-offcanvas-right">

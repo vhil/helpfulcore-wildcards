@@ -63,7 +63,7 @@
     <Compile Include="ItemResolving\ItemResolverCollection.cs" />
     <Compile Include="ItemResolving\WildcardItemResolver.cs" />
     <Compile Include="Pipelines\Response\GetPageItem\GetFromWildcard.cs" />
-    <Compile Include="Profiling\WildcardTokenExtractor.cs">
+    <Compile Include="sitecore\admin\WildcardTokenExtractor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
