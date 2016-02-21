@@ -21,6 +21,11 @@ namespace Helpfulcore.Wildcards.ItemResolving
 		    get { return this.encodeNameReplacements ?? (this.encodeNameReplacements = this.GetEncodeNameReplacements()); }
 	    }
 
+	    protected bool WildcardWrapSearchTermsInEncodedQuotes
+	    {
+		    get { return Settings.GetBoolSetting("WildcardWrapSearchTermsInEncodedQuotes", false); }
+	    }
+
 	    public override Item ResolveItem(Item item, WildcardRouteItem routeItem)
         {
             if (routeItem == null)
@@ -99,7 +104,12 @@ namespace Helpfulcore.Wildcards.ItemResolving
 
         protected virtual string GetTokenSearchibleValue(string value)
         {
-            return "%22" + value + "%22";
+	        if (this.WildcardWrapSearchTermsInEncodedQuotes)
+	        {
+				return "%22" + value + "%22";
+	        }
+
+	        return value;
         }
 
         protected virtual string GetPropertyIndexName(string key)
