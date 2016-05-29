@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Web;
 using Helpfulcore.Wildcards.ItemResolving;
 using Sitecore;
 using Sitecore.Data.Items;
@@ -22,6 +21,10 @@ namespace Helpfulcore.Wildcards.Pipelines.Response.GetPageItem
 				}
 			}
 
+			var originalItemCacheKey = "Wildcards.OriginalItem";
+
+			HttpContext.Current.Items[originalItemCacheKey] = args.Result;
+			
 			args.Result = this.ResolveItem(args);
 		}
 

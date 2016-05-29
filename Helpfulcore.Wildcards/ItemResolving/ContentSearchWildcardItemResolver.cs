@@ -26,7 +26,12 @@ namespace Helpfulcore.Wildcards.ItemResolving
 		    get { return Settings.GetBoolSetting("WildcardWrapSearchTermsInEncodedQuotes", false); }
 	    }
 
-	    public override Item ResolveItem(Item item, WildcardRouteItem routeItem)
+		protected bool WildcardTokenizeSearchTerms
+		{
+			get { return Settings.GetBoolSetting("WildcardTokenizeSearchTerms", false); }
+		}
+
+		public override Item ResolveItem(Item item, WildcardRouteItem routeItem)
         {
             if (routeItem == null)
             {
@@ -61,7 +66,7 @@ namespace Helpfulcore.Wildcards.ItemResolving
 				{
 					queryable = this.AddTokenPredicates(tokenRule, queryable);
 				}
-
+				
                 var result = queryable.FirstOrDefault();
                 if (result == null)
                 {
@@ -89,7 +94,7 @@ namespace Helpfulcore.Wildcards.ItemResolving
 		        var value = replacement.Value;
 		        if (searchTerm.ToLower().Contains(value.ToLower()))
 		        {
-					foreach (var name in EncodeNameReplacements.Where(x => x.Value == value))
+					foreach (var name in this.EncodeNameReplacements.Where(x => x.Value == value))
 					{
 						var searchTermVariant = searchTerm.Replace(name.Value, name.Key);
 						predicate = predicate.Or(p => p[indexFieldName] == searchTermVariant);
@@ -104,6 +109,16 @@ namespace Helpfulcore.Wildcards.ItemResolving
 
         protected virtual string GetTokenSearchibleValue(string value)
         {
+	        if (this.WildcardTokenizeSearchTerms)
+	        {
+		        value = value
+			        .Replace("-", "")
+			        .Replace("+", "")
+			        .Replace(" ", "")
+					.ToLower();
+
+	        }
+
 	        if (this.WildcardWrapSearchTermsInEncodedQuotes)
 	        {
 				return "%22" + value + "%22";

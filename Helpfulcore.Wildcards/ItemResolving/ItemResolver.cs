@@ -29,10 +29,13 @@ namespace Helpfulcore.Wildcards.ItemResolving
 
             using (new SiteContextSwitcher(Context.Site))
             {
-                itemUrl = LinkManager.GetItemUrl(item).Split(new[] { '/' });
+	            var options = UrlOptions.DefaultOptions;
+				options.LanguageEmbedding = LanguageEmbedding.Never;
+	            var url = LinkManager.GetItemUrl(item, options);
+	            itemUrl = url.Split('/');
             }
 
-            var requestUrl = HttpContext.Current.Request.Url.LocalPath.Split(new[] { '/' });
+            var requestUrl = HttpContext.Current.Request.Url.LocalPath.Split('/');
             var rules = routeItem.ItemResolvingRules;
 
             int ruleIndex = 0;
@@ -40,7 +43,7 @@ namespace Helpfulcore.Wildcards.ItemResolving
 
             foreach (var rurl in requestUrl)
             {
-                if (itemUrl[index] == WildcardTokenizedString)
+                if (itemUrl[index] == this.WildcardTokenizedString)
                 {
 	                if (rules.ContainsKey(ruleIndex))
 	                {
@@ -50,12 +53,20 @@ namespace Helpfulcore.Wildcards.ItemResolving
 							throw new Exception("Can't resolve wildcards by index " + (ruleIndex));
 						}
 
-						ret.Add(HttpUtility.UrlDecode(mapping), rurl);
-						ruleIndex++;
+		                mapping = HttpUtility.UrlDecode(mapping);
+		                if (!string.IsNullOrEmpty(mapping))
+		                {
+			                if (!ret.ContainsKey(mapping))
+			                {
+				                ret.Add(mapping, rurl);
+			                }
+		                }
 	                }
-                }
 
-                index++;
+					ruleIndex++;
+				}
+
+				index++;
             }
 
             return ret;
