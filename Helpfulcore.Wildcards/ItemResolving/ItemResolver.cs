@@ -30,7 +30,8 @@ namespace Helpfulcore.Wildcards.ItemResolving
             using (new SiteContextSwitcher(Context.Site))
             {
 	            var options = UrlOptions.DefaultOptions;
-				options.LanguageEmbedding = LanguageEmbedding.Never;
+				//options.LanguageEmbedding = LanguageEmbedding.Never;
+                options.AlwaysIncludeServerUrl = false;
 	            var url = LinkManager.GetItemUrl(item, options);
 	            itemUrl = url.Split('/');
             }
