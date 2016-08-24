@@ -82,7 +82,7 @@ namespace Helpfulcore.Wildcards.UrlGeneration.TokenValueExtraction
         {
             if (!(item is Item))
             {
-                throw new Exception("Given object is not an item.");
+                throw new WildcardException("Given object is not an item.");
             }
 
             var castedItem = (Item) item;

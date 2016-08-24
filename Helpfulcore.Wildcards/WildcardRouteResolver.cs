@@ -14,12 +14,12 @@ namespace Helpfulcore.Wildcards
 
 		protected virtual string QueryForItemResolver
 		{
-			get { return RoutesPath + "/*[contains(@#" + WildcardRouteItem.FieldNames.WildcardItems + "#, '{0}')]"; }
+			get { return this.RoutesPath + "/*[contains(@#" + WildcardRouteItem.FieldNames.WildcardItems + "#, '{0}')]"; }
 		}
 
 		protected virtual string QueryForLinkProvider
 		{
-			get { return RoutesPath + "/*[contains(@#" + WildcardRouteItem.FieldNames.ItemTemplates + "#, '{0}')]"; }
+			get { return this.RoutesPath + "/*[contains(@#" + WildcardRouteItem.FieldNames.ItemTemplates + "#, '{0}')]"; }
 		}
 
 		protected virtual string RoutesPath
@@ -37,7 +37,7 @@ namespace Helpfulcore.Wildcards
 				return this.ItemResolverRoutesCache[cacheKey];
 			}
 
-			var query = string.Format(QueryForItemResolver, item.ID);
+			var query = string.Format(this.QueryForItemResolver, item.ID);
 			var route = Context.Database.SelectSingleItem(query);
 
 			if (route == null)
@@ -63,7 +63,7 @@ namespace Helpfulcore.Wildcards
 			}
 
 			var query = string.Format(this.QueryForLinkProvider, item.TemplateID);
-			var route = Context.Database.SelectSingleItem(query);
+			var route = item.Database.SelectSingleItem(query);
 
 			if (route == null)
 			{

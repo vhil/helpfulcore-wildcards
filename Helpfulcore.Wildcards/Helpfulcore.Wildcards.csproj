@@ -73,6 +73,7 @@
     <Compile Include="UrlGeneration\TokenValueExtraction\TokenValueExtractorCollection.cs" />
     <Compile Include="UrlGeneration\TokenValueExtraction\UrlGenerationTokenValueExtractor.cs" />
     <Compile Include="UrlGeneration\WildcardLinkProvider.cs" />
+    <Compile Include="WildcardException.cs" />
     <Compile Include="WildcardManager.cs" />
     <Compile Include="WildcardRouteItem.cs" />
     <Compile Include="RouteResolver.cs" />
