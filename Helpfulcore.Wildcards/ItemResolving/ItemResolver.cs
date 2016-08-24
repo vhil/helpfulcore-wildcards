@@ -30,7 +30,6 @@ namespace Helpfulcore.Wildcards.ItemResolving
             using (new SiteContextSwitcher(Context.Site))
             {
 	            var options = UrlOptions.DefaultOptions;
-				//options.LanguageEmbedding = LanguageEmbedding.Never;
                 options.AlwaysIncludeServerUrl = false;
 	            var url = LinkManager.GetItemUrl(item, options);
 	            itemUrl = url.Split('/');
@@ -51,7 +50,7 @@ namespace Helpfulcore.Wildcards.ItemResolving
 						var mapping = rules[ruleIndex];
 						if (mapping == null)
 						{
-							throw new Exception("Can't resolve wildcards by index " + (ruleIndex));
+							throw new WildcardException("Can't resolve wildcards by index " + (ruleIndex));
 						}
 
 		                mapping = HttpUtility.UrlDecode(mapping);

@@ -31,7 +31,7 @@ namespace Helpfulcore.Wildcards.sitecore.admin
 				var siteName = this.Request.QueryString["sc_site"];
 			    if (string.IsNullOrEmpty(siteName) && Sitecore.Context.Site == null)
 			    {
-					throw new Exception("Site context can't be resolved, pass the 'sc_site' query string parameter");
+					throw new WildcardException("Site context can't be resolved, pass the 'sc_site' query string parameter");
 			    }
 
 			    return string.IsNullOrEmpty(siteName) ? Sitecore.Context.Site.Name : siteName;
