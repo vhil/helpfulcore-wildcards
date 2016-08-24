@@ -6,7 +6,14 @@ namespace Helpfulcore.Wildcards.Events.PublishEnd
     {
         public void ClearCache(object sender, EventArgs args)
         {
-            WildcardManager.Current.ClearCache();
+            try
+            {
+                WildcardManager.Current.ClearCache();
+            }
+            catch
+            {
+                //
+            }
         }
     }
 }

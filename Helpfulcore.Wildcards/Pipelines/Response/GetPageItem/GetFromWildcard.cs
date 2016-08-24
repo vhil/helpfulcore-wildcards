@@ -9,26 +9,41 @@ namespace Helpfulcore.Wildcards.Pipelines.Response.GetPageItem
 {
 	public class GetFromWildcard : GetPageItemProcessor
 	{
-		public override void Process(GetPageItemArgs args)
+        private const string OriginalItemCacheKey = "Wildcards.OriginalItem";
+
+        public override void Process(GetPageItemArgs args)
 		{
-			Assert.ArgumentNotNull(args, "args");
+            if (!this.WildvardResolvingPossible(args))
+            {
+                return;
+            }
 
-			if (args.Result != null)
-			{
-				if (!WildcardManager.Current.HasWildcardsPath(args.Result))
-				{
-					return;
-				}
-			}
+            HttpContext.Current.Items[OriginalItemCacheKey] = args.Result;
 
-			var originalItemCacheKey = "Wildcards.OriginalItem";
+            var resolvedItem = this.ResolveItem(args);
 
-			HttpContext.Current.Items[originalItemCacheKey] = args.Result;
-			
-			args.Result = this.ResolveItem(args);
+            if (resolvedItem != null)
+            {
+                args.Result = resolvedItem;
+            }
 		}
 
-		protected virtual Item ResolveItem(GetPageItemArgs args)
+	    protected virtual bool WildvardResolvingPossible(GetPageItemArgs args)
+	    {
+	        if (args == null || args.Result == null || Context.Site == null || Context.Database == null || Context.Database.Name == "core")
+	        {
+	            return false;
+	        }
+
+	        if (!WildcardManager.Current.HasWildcardsPath(args.Result))
+	        {
+	            return false;
+	        }
+
+	        return true;
+	    }
+
+	    protected virtual Item ResolveItem(GetPageItemArgs args)
 		{
             if (args.Result == null)
             {

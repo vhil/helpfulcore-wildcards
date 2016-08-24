@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Sitecore.Data;
 using Sitecore.Data.Fields;
@@ -84,12 +83,12 @@ namespace Helpfulcore.Wildcards
             var field = (InternalLinkField)this.Item.Fields[fieldName];
             if (field == null)
             {
-                throw new Exception(string.Format("Route item is invalid. There is no '{0}' field.", fieldName));
+                throw new WildcardException(string.Format("Route item is invalid. There is no '{0}' field.", fieldName));
             }
 
             if (field.TargetID == ID.Null)
             {
-                throw new Exception(string.Format("'{0}' field should not be empty on wildcard route item.", fieldName));
+                throw new WildcardException(string.Format("'{0}' field should not be empty on wildcard route item.", fieldName));
             }
 
             return field.TargetItem;
@@ -100,12 +99,12 @@ namespace Helpfulcore.Wildcards
             var field = (MultilistField)this.Item.Fields[fieldName];
             if (field == null)
             {
-                throw new Exception(string.Format("Route item is invalid. There is no '{0}' field.", fieldName));
+                throw new WildcardException(string.Format("Route item is invalid. There is no '{0}' field.", fieldName));
             }
 
             if (!field.TargetIDs.Any())
             {
-                throw new Exception(string.Format("'{0}' field should not be empty on wildcard route item.", fieldName));
+                throw new WildcardException(string.Format("'{0}' field should not be empty on wildcard route item.", fieldName));
             }
 
             return field.TargetIDs;
@@ -116,7 +115,7 @@ namespace Helpfulcore.Wildcards
             var field = (NameValueListField)this.Item.Fields[fieldName];
             if (field == null)
             {
-                throw new Exception(string.Format("Route item is invalid. There is no '{0}' name value list field.", fieldName));
+                throw new WildcardException(string.Format("Route item is invalid. There is no '{0}' name value list field.", fieldName));
             }
 
             var ret = new Dictionary<int, string>();
@@ -127,7 +126,7 @@ namespace Helpfulcore.Wildcards
                 int wildcardIndex;
                 if (!int.TryParse(ruleKey, out wildcardIndex))
                 {
-                    throw new Exception(string.Format("'{0}' field contains invalid integer value in key.", fieldName));
+                    throw new WildcardException(string.Format("'{0}' field contains invalid integer value in key.", fieldName));
                 }
 
                 ret.Add(wildcardIndex, field.NameValues[ruleKey]);
