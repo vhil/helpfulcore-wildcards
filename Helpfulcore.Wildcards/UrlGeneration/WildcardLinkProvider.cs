@@ -18,6 +18,11 @@ namespace Helpfulcore.Wildcards.UrlGeneration
 
         public override string GetItemUrl(Item item, UrlOptions options)
         {
+            if (item == null || options == null)
+            {
+                return base.GetItemUrl(item, options);
+            }
+
             var route = WildcardManager.Current.GetWildcardRouteForLinkProvider(item, Context.Site);
 
             if (route == null || route.WildcardItemIds.Any(x => x == item.ID))
@@ -47,7 +52,7 @@ namespace Helpfulcore.Wildcards.UrlGeneration
             foreach (var segment in urlPattern)
             {
                 var resultSegment = segment;
-                if (segment.ToLower() == WildcardTokenizedString)
+                if (segment.ToLower() == this.WildcardTokenizedString)
                 {
                     resultSegment = tokenValues[tokenCounter++];
                 }

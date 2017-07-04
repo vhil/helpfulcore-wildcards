@@ -4,3 +4,4 @@ packages*/
 obj*/
 bin*/
 .vs/config/applicationhost.config
+*.suo
