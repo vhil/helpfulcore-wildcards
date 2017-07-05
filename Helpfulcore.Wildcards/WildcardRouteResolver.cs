@@ -1,4 +1,6 @@
-﻿namespace Helpfulcore.Wildcards
+﻿using System;
+
+namespace Helpfulcore.Wildcards
 {
 	using System.Collections.Concurrent;
 	using System.Collections.Generic;
@@ -29,7 +31,9 @@
 				return ItemResolverRoutesCache[cacheKey];
 			}
 
-			var route = this.Routes?.FirstOrDefault(x => x.WildcardItemIds.Contains(item.ID));
+			if (this.Routes == null) return null;
+
+			var route = this.Routes.FirstOrDefault(x => x.WildcardItemIds.Contains(item.ID));
 
 			if (route == null)
 			{
@@ -51,7 +55,9 @@
 				return LinkProviderRoutesCache[cacheKey];
 			}
 
-			var route = this.Routes?.FirstOrDefault(x => x.ItemTemplates.Contains(new TemplateID(item.TemplateID)));
+			if (this.Routes == null) return null;
+
+			var route = this.Routes.FirstOrDefault(x => x.ItemTemplates.Contains(new TemplateID(item.TemplateID)));
 
 			if (route == null)
 			{
@@ -75,7 +81,7 @@
 		{
 			get
 			{
-				if (Context.Database?.Name == "core") return null;
+				if (Context.Database == null) return null;
 
 				if (_routes == null || !_routes.Any())
 				{
@@ -83,9 +89,11 @@
 					{
 						if (_routes == null || !_routes.Any())
 						{
-							var routesRootItem = Context.Database?.GetItem(this.RoutesPath);
+							var routesRootItem = Context.Database.GetItem(this.RoutesPath);
 
-							_routes = routesRootItem?
+							if (routesRootItem == null) return null;
+
+							_routes = routesRootItem
 								.GetChildrenReccursively(WildcardRouteItem.TemplateId.Guid)
 								.Select(x => new WildcardRouteItem(x))
 								.ToArray();
