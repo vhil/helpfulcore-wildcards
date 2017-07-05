@@ -75,7 +75,7 @@
 		{
 			get
 			{
-				if (Context.Database.Name == "core") return null;
+				if (Context.Database?.Name == "core") return null;
 
 				if (_routes == null || !_routes.Any())
 				{
@@ -83,7 +83,7 @@
 					{
 						if (_routes == null || !_routes.Any())
 						{
-							var routesRootItem = Context.Database.GetItem(this.RoutesPath);
+							var routesRootItem = Context.Database?.GetItem(this.RoutesPath);
 
 							_routes = routesRootItem?
 								.GetChildrenReccursively(WildcardRouteItem.TemplateId.Guid)
