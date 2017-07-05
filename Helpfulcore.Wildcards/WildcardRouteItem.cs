@@ -8,6 +8,7 @@ namespace Helpfulcore.Wildcards
 {
     public class WildcardRouteItem
     {
+		public static ID TemplateId = new ID("{B4C339CC-57FD-4FF2-ACBA-120B72C5FE78}");
         public static class FieldNames
         {
             public const string WildcardItems = "Wildcard Items";
@@ -17,7 +18,7 @@ namespace Helpfulcore.Wildcards
 			public const string ItemSearchRootNode = "Item Search Root Node";
         }
 
-        protected readonly Item Item;
+        internal readonly Item Item;
 
         public WildcardRouteItem(Item wildcardRouteItem)
         {
@@ -44,8 +45,8 @@ namespace Helpfulcore.Wildcards
             }
         }
 
-        private IEnumerable<TemplateID> itemTemplates;
-        public IEnumerable<TemplateID> ItemTemplates
+        private ICollection<TemplateID> itemTemplates;
+        public ICollection<TemplateID> ItemTemplates
         {
             get
             {
@@ -55,8 +56,8 @@ namespace Helpfulcore.Wildcards
             }
         }
 
-        private IEnumerable<Item> wildcardItems;
-        public IEnumerable<Item> WildcardItems
+        private ICollection<Item> wildcardItems;
+        public ICollection<Item> WildcardItems
         {
             get
             {
@@ -66,10 +67,10 @@ namespace Helpfulcore.Wildcards
             }
         }
 
-        private IEnumerable<ID> wildcardItemIds;
-        public IEnumerable<ID> WildcardItemIds
+        private ICollection<ID> wildcardItemIds;
+        public ICollection<ID> WildcardItemIds
         {
-            get { return this.wildcardItemIds ?? (this.wildcardItemIds = GetMultilist(FieldNames.WildcardItems)); }
+            get { return this.wildcardItemIds ?? (this.wildcardItemIds = this.GetMultilist(FieldNames.WildcardItems).ToArray()); }
         }
 
         private Item itemSearchRootNode;

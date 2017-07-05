@@ -1,86 +1,101 @@
-﻿using System.Collections.Generic;
-using Sitecore;
-using Sitecore.Configuration;
-using Sitecore.Data.Items;
-using Sitecore.Diagnostics;
-using Sitecore.Sites;
-
-namespace Helpfulcore.Wildcards
+﻿namespace Helpfulcore.Wildcards
 {
+	using System.Collections.Concurrent;
+	using System.Collections.Generic;
+	using System.Linq;
+	using Extensions;
+	using Sitecore;
+	using Sitecore.Configuration;
+	using Sitecore.Data;
+	using Sitecore.Data.Items;
+	using Sitecore.Diagnostics;
+	using Sitecore.Sites;
+
 	public class WildcardRouteResolver : RouteResolver
 	{
-		protected IDictionary<string, WildcardRouteItem> ItemResolverRoutesCache = new Dictionary<string, WildcardRouteItem>();
-		protected IDictionary<string, WildcardRouteItem> LinkProviderRoutesCache = new Dictionary<string, WildcardRouteItem>();
-
-		protected virtual string QueryForItemResolver
-		{
-			get { return this.RoutesPath + "/*[contains(@#" + WildcardRouteItem.FieldNames.WildcardItems + "#, '{0}')]"; }
-		}
-
-		protected virtual string QueryForLinkProvider
-		{
-			get { return this.RoutesPath + "/*[contains(@#" + WildcardRouteItem.FieldNames.ItemTemplates + "#, '{0}')]"; }
-		}
-
-		protected virtual string RoutesPath
-		{
-			get { return Settings.GetSetting("WildcardProvider.RoutesPath", "/sitecore/system/modules/wildcards/routes"); }
-		}
+		private static readonly object InitSyncRoot = new object();
+		private static ICollection<WildcardRouteItem> _routes;
+		protected static ConcurrentDictionary<string, WildcardRouteItem> ItemResolverRoutesCache = new ConcurrentDictionary<string, WildcardRouteItem>();
+		protected static ConcurrentDictionary<string, WildcardRouteItem> LinkProviderRoutesCache = new ConcurrentDictionary<string, WildcardRouteItem>();
+		protected virtual string RoutesPath => Settings.GetSetting("WildcardProvider.RoutesPath", "/sitecore/system/modules/wildcards/routes");
 
 		public override WildcardRouteItem GetWildcardRouteForItemResolver(Item item, SiteContext site)
 		{
 			Assert.ArgumentNotNull(item, "item");
 
-			var cacheKey = string.Format("cache{0}_{1}_{2}", item.ID, item.Language.Name, site.Name);
-			if (this.ItemResolverRoutesCache.ContainsKey(cacheKey))
+			var cacheKey = $"cache{item.ID}_{item.Language.Name}_{site.Name}";
+			if (ItemResolverRoutesCache.ContainsKey(cacheKey))
 			{
-				return this.ItemResolverRoutesCache[cacheKey];
+				return ItemResolverRoutesCache[cacheKey];
 			}
 
-			var query = string.Format(this.QueryForItemResolver, item.ID);
-			var route = Context.Database.SelectSingleItem(query);
+			var route = this.Routes?.FirstOrDefault(x => x.WildcardItemIds.Contains(item.ID));
 
 			if (route == null)
 			{
 				return null;
 			}
 
-			var wildcardRoute = new WildcardRouteItem(route);
+			ItemResolverRoutesCache.TryAdd(cacheKey, route);
 
-			this.ItemResolverRoutesCache.Add(cacheKey, wildcardRoute);
-
-			return wildcardRoute;
+			return route;
 		}
 
 		public override WildcardRouteItem GetWildcardRouteForLinkProvider(Item item, SiteContext site)
 		{
 			Assert.ArgumentNotNull(item, "item");
 
-			var cacheKey = string.Format("cache{0}_{1}_{2}", item.TemplateID, item.Language.Name, site.Name);
-			if (this.LinkProviderRoutesCache.ContainsKey(cacheKey))
+			var cacheKey = $"cache{item.TemplateID}_{item.Language.Name}_{site.Name}";
+			if (LinkProviderRoutesCache.ContainsKey(cacheKey))
 			{
-				return this.LinkProviderRoutesCache[cacheKey];
+				return LinkProviderRoutesCache[cacheKey];
 			}
 
-			var query = string.Format(this.QueryForLinkProvider, item.TemplateID);
-			var route = item.Database.SelectSingleItem(query);
+			var route = this.Routes?.FirstOrDefault(x => x.ItemTemplates.Contains(new TemplateID(item.TemplateID)));
 
 			if (route == null)
 			{
 				return null;
 			}
 
-			var wildcardRoute = new WildcardRouteItem(route);
+			LinkProviderRoutesCache.TryAdd(cacheKey, route);
 
-			this.LinkProviderRoutesCache.Add(cacheKey, wildcardRoute);
-
-			return wildcardRoute;
+			return route;
 		}
 
 		public override void ClearCache()
 		{
-			this.ItemResolverRoutesCache.Clear();
-			this.LinkProviderRoutesCache.Clear();
+			ItemResolverRoutesCache.Clear();
+			LinkProviderRoutesCache.Clear();
+			_routes = null;
+		}
+
+
+		protected virtual ICollection<WildcardRouteItem> Routes
+		{
+			get
+			{
+				if (Context.Database.Name == "core") return null;
+
+				if (_routes == null || !_routes.Any())
+				{
+					lock (InitSyncRoot)
+					{
+						if (_routes == null || !_routes.Any())
+						{
+							var routesRootItem = Context.Database.GetItem(this.RoutesPath);
+
+							_routes = routesRootItem?
+								.GetChildrenReccursively(WildcardRouteItem.TemplateId.Guid)
+								.Select(x => new WildcardRouteItem(x))
+								.ToArray();
+
+						}
+					}
+				}
+
+				return _routes;
+			}
 		}
 	}
 }
