@@ -1,14 +1,16 @@
-﻿using System.Web;
-using Helpfulcore.Wildcards.ItemResolving;
+﻿using Helpfulcore.Wildcards.ItemResolving;
 using Sitecore;
+using Sitecore.Abstractions;
 using Sitecore.Data.Items;
-using Sitecore.Diagnostics;
 using Sitecore.Mvc.Pipelines.Response.GetPageItem;
+using System.Web;
 
 namespace Helpfulcore.Wildcards.Pipelines.Response.GetPageItem
 {
-	public class GetFromWildcard : GetPageItemProcessor
+    public class GetFromWildcard : GetPageItemProcessor
 	{
+        public GetFromWildcard(BaseClient baseClient) : base(baseClient) { }
+
         private const string OriginalItemCacheKey = "Wildcards.OriginalItem";
 
         public override void Process(GetPageItemArgs args)
